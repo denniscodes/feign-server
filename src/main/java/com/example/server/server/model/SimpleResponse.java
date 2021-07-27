@@ -10,6 +10,12 @@ public class SimpleResponse {
     private String code = "OK";
     private String reason;
 
+    public SimpleResponse(String status, String code, String reason) {
+        this.status = status;
+        this.code = code;
+        this.reason = reason;
+    }
+
     public SimpleResponse(String reason) {
         this.reason = reason;
     }
