@@ -22,9 +22,21 @@ public class Simple {
     public ResponseEntity<SimpleResponse> getNotAuthorizedStatus() {
         return new ResponseEntity<>(new SimpleResponse("REQ-ERROR", "/status401", "Not authorized."), HttpStatus.valueOf(401));
     }
-    @GetMapping("status501")
+    @GetMapping("status500")
     public ResponseEntity<SimpleResponse> getServerErrorStatus() {
-        return new ResponseEntity<>(new SimpleResponse("Server error."), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new SimpleResponse("SVR-ERROR", "/status500", "Internal error."), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @GetMapping("status501")
+    public ResponseEntity<SimpleResponse> getNotImplementedStatus() {
+        return new ResponseEntity<>(new SimpleResponse("SVR-ERROR", "/status501", "Not implemented."), HttpStatus.NOT_IMPLEMENTED);
+    }
+    @GetMapping("status502")
+    public ResponseEntity<SimpleResponse> getGatewayErrorStatus() {
+        return new ResponseEntity<>(new SimpleResponse("SVR-ERROR", "/status502", "Bad gateway."), HttpStatus.BAD_GATEWAY);
+    }
+    @GetMapping("status503")
+    public ResponseEntity<SimpleResponse> getServiceUnavailableStatus() {
+        return new ResponseEntity<>(new SimpleResponse("SVR-ERROR", "/status503", "Server unavailable."), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
 }
