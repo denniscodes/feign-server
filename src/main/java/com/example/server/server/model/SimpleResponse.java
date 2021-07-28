@@ -5,9 +5,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SimpleResponse {
-    private String status = "SUCCESS";
-    private String code = "OK";
+public class SimpleResponse implements ApiResponse {
+    private String status = SUCCESS_STATUS;
+    private String code = COMPLETE_CODE;
     private String reason;
 
     public SimpleResponse(String status, String code, String reason) {
