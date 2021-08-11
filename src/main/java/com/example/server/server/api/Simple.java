@@ -12,9 +12,13 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Thread.sleep;
+
 @RestController
 @Slf4j
 public class Simple {
+    public static final Integer MAX_DELAY = 10;
+
     private Map<Integer, ApiResponse> responses = new HashMap<>();
 
     @PostConstruct
@@ -27,12 +31,8 @@ public class Simple {
         responses.put(502, new SimpleResponse("SVR-ERROR", "/status502", "Bad gateway."));
         responses.put(503, new SimpleResponse("SVR-ERROR", "/status503", "Server unavailable."));
     }
-//    @GetMapping
-//    public ResponseEntity<? extends ApiResponse> getSimpleStatus() {
-//        return new ResponseEntity<>(responses.get(Integer.valueOf(200)), HttpStatus.OK);
-//    }
     @RequestMapping(value="/", method = RequestMethod.GET)
-    public ResponseEntity<ApiResponse> getAnyStatus(@RequestParam("status") Integer status) {
+    public ResponseEntity<ApiResponse> getAnyStatus(@RequestParam(value = "status", defaultValue = "200") Integer status) {
         if (status == null) return new ResponseEntity<>(responses.get(Integer.valueOf(200)), HttpStatus.OK);
         ApiResponse response = responses.get(status);
         if (response == null) {
@@ -44,4 +44,20 @@ public class Simple {
         return new ResponseEntity<ApiResponse>(response, HttpStatus.valueOf(status));
     }
 
+    @RequestMapping(value="/delay", method = RequestMethod.GET)
+    public ResponseEntity<ApiResponse> getSuccessWithDelay(@RequestParam(value = "delay", defaultValue = "5") Integer delay) {
+        if (delay < 1 || delay > MAX_DELAY) {
+            return new ResponseEntity<>(new SimpleResponse(ApiResponse.ERROR_STATUS, "Parameter error.",
+                    String.format("Delay must be between 1 and %d seconds.",  MAX_DELAY)),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            sleep(delay*1000);
+        } catch (InterruptedException e) {
+            return new ResponseEntity<>(new SimpleResponse(ApiResponse.ERROR_STATUS, e.getClass().getSimpleName(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(new SimpleResponse(ApiResponse.SUCCESS_STATUS, "OK", "Timeout expired."), HttpStatus.OK);
+    }
 }
